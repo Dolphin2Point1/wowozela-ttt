@@ -3,8 +3,6 @@ local SWEP = _G.SWEP or {
     Secondary = {}
 }
 
-local wowozela = _G.wowozela_ttt or {}
-
 if SERVER then
     AddCSLuaFile()
 end
@@ -15,17 +13,14 @@ SWEP.Author = ""
 SWEP.Contact = ""
 SWEP.Purpose = ""
 SWEP.Instructions = ""
-SWEP.PrintName = "Wowozela"
+SWEP.PrintName = "TTT Wowozela"
 -- SWEP.Category = "Toys"
-
-SWEP.SlotPos = 1
-SWEP.Slot = 1
 
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
 
-SWEP.AutoSwitchTo = true
-SWEP.AutoSwitchFrom = true
+SWEP.AutoSwitchTo = false
+SWEP.AutoSwitchFrom = false
 SWEP.HoldType = "normal"
 
 SWEP.Primary.ClipSize = -1
@@ -51,6 +46,7 @@ SWEP.CanBuy = {ROLE_TRAITOR, ROLE_DETECTIVE}
 SWEP.NoSights = true
 SWEP.EquipMenuData = {
     type = "item_weapon",
+    name = "Wowozela",
     desc = "Become the musician you've always wanted to be! unless ur braydon then u make horrifying sounds with it"
 }
 SWEP.Icon = "VGUI/ttt/wowozela.jpg"
@@ -60,9 +56,6 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Int", 1, "NoteIndexRight")
 
     self:NetworkVar("Bool", 0, "Looping")
-end
-
-function SWEP:PrintWeaponInfo()
 end
 
 local mat = Material("particle/fire")
@@ -242,7 +235,7 @@ function SWEP:Deploy()
 end
 
 function SWEP:Holster()
-    if not self:GetOwner():KeyDown(IN_RELOAD) then
+    if self:GetOwner() == nil and not self:GetOwner():KeyDown(IN_RELOAD) then
         local ply = self:GetOwner()
         if CLIENT and ply.wowozela_head_cb then
             ply:RemoveCallback("BuildBonePositions", ply.wowozela_head_cb)
@@ -437,7 +430,7 @@ if CLIENT then
         end
     end
     function SWEP:LoadPages()
-        if not wowozela.GetSample(1) then
+        if wowozela == nil or not wowozela.GetSample(1) then
             return
         end
 

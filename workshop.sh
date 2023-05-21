@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORKSHOP_ID=108170491
+WORKSHOP_ID=2976397303
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     gmad="$GMOD/bin/gmad"

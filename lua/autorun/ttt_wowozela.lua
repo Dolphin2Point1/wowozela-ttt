@@ -2,15 +2,13 @@ if SERVER then
     AddCSLuaFile()
 end
 
-local wowozela = _G.wowozela or {}
-_G.wowozela = wowozela
+local wowozela = _G.wowozela_ttt or {}
+_G.wowozela_ttt = wowozela
 
 wowozela.ValidNotes = {
     ["Left"] = IN_ATTACK,
     ["Right"] = IN_ATTACK2
 }
-
-
 
 wowozela.ValidKeys = {IN_ATTACK, IN_ATTACK2, IN_WALK, IN_SPEED, IN_USE}
 
@@ -146,10 +144,10 @@ if SERVER then
     function wowozela.LoadSamples()
         wowozela.KnownSamples = {}
 
-        local _, directories = file.Find("sound/wowozela/samples/*", "GAME")
+        local _, directories = file.Find("sound/ttt_wowozela/samples/*", "GAME")
 
         for _, directory in ipairs(directories) do
-            for _, file_name in ipairs(file.Find("sound/wowozela/samples/" .. directory .. "/*", "GAME")) do
+            for _, file_name in ipairs(file.Find("sound/ttt_wowozela/samples/" .. directory .. "/*", "GAME")) do
                 if file_name:EndsWith(".ogg") or file_name:EndsWith(".mp3") then
                     table.insert(wowozela.KnownSamples, {
                         category = directory,
@@ -168,7 +166,7 @@ if SERVER then
 
     util.AddNetworkString("wowozela")
 
-    resource.AddWorkshop("108170491")
+    resource.AddWorkshop("2976397303")
 
     function wowozela.BroacastSamples(ply)
         net.Start("wowozela")

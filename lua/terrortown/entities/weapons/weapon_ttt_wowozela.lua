@@ -8,8 +8,7 @@ if SERVER then
 end
 
 -- easylua.StartWeapon("wowozela")
-SWEP.Base = "weapon_base"
-
+SWEP.Base = "weapon_tttbase"
 SWEP.Author = ""
 SWEP.Contact = ""
 SWEP.Purpose = ""
@@ -21,6 +20,7 @@ SWEP.SlotPos = 1
 SWEP.Slot = 1
 
 SWEP.Spawnable = true
+SWEP.AdminOnly = false
 
 SWEP.AutoSwitchTo = true
 SWEP.AutoSwitchFrom = true
@@ -42,6 +42,16 @@ SWEP.ViewModel = "models/weapons/v_hands.mdl"
 SWEP.WorldModel = "models/weapons/w_bugbait.mdl"
 SWEP.DrawWeaponInfoBox = true
 SWEP.RenderGroup = RENDERGROUP_BOTH
+
+SWEP.AllowDrop = true
+SWEP.Kind = WEAPON_SPECIAL
+SWEP.CanBuy = {ROLE_TRAITOR, ROLE_DETECTIVE}
+SWEP.NoSights = true
+SWEP.EquipMenuData = {
+    type = "item_weapon",
+    desc = "Become the musician you've always wanted to be! unless ur braydon then u make horrifying sounds with it"
+}
+SWEP.Icon = "VGUI/ttt/wowozela.jpg"
 
 function SWEP:SetupDataTables()
     self:NetworkVar("Int", 0, "NoteIndexLeft")
@@ -70,7 +80,7 @@ function SWEP:CanSecondaryAttack()
 end
 
 function SWEP:ShouldDropOnDie()
-    return false
+    return true
 end
 
 function SWEP:Reload()

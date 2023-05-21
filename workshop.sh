@@ -7,7 +7,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     gmpublish="$GMOD/gmpublish"
 else 
     gmad="$GMOD/bin/gmad_linux"
-    gmpublish="$GMOD/gmpublish_linux"
+    gmpublish="$GMOD/bin/gmpublish_linux"
 fi
 
 export LD_LIBRARY_PATH="$GMOD/bin/"

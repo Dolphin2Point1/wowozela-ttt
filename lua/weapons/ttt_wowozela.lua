@@ -3,6 +3,8 @@ local SWEP = _G.SWEP or {
     Secondary = {}
 }
 
+local wowozela = _G.wowozela_ttt or {}
+
 if SERVER then
     AddCSLuaFile()
 end

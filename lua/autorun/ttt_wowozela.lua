@@ -1,6 +1,7 @@
 local wowozela = _G.wowozela_ttt or {}
 _G.wowozela_ttt = wowozela
 
+
 wowozela.ValidNotes = {
     ["Left"] = IN_ATTACK,
     ["Right"] = IN_ATTACK2

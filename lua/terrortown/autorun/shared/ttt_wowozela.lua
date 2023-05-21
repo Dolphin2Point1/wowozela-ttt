@@ -1,7 +1,3 @@
-if SERVER then
-    AddCSLuaFile()
-end
-
 local wowozela = _G.wowozela_ttt or {}
 _G.wowozela_ttt = wowozela
 
@@ -36,11 +32,11 @@ if CLIENT then
     local function set_sample_index(which, note_index)
         local wep = LocalPlayer():GetActiveWeapon()
 
-        if not wep:IsValid() or wep:GetClass() ~= "wowozela" then
+        if not wep:IsValid() or wep:GetClass() ~= "ttt_wowozela" then
             return
         end
 
-        net.Start("wowozela")
+        net.Start("wowozela_ttt")
             net.WriteInt(wowozela.NET.wowozela_select, 4)
             net.WriteInt(which, 32)
             net.WriteInt(note_index, 32)
@@ -57,7 +53,7 @@ if CLIENT then
 
 
     function wowozela.RequestCustomSamplesIndexes(samples)
-        net.Start("wowozela")
+        net.Start("wowozela_ttt")
             net.WriteInt(wowozela.NET.wowozela_customsample, 4)
             net.WriteTable(samples)
         net.SendToServer()
@@ -164,12 +160,12 @@ if SERVER then
     end
     wowozela.LoadSamples()
 
-    util.AddNetworkString("wowozela")
+    util.AddNetworkString("wowozela_ttt")
 
     resource.AddWorkshop("2976397303")
 
     function wowozela.BroacastSamples(ply)
-        net.Start("wowozela")
+        net.Start("wowozela_ttt")
             net.WriteInt(wowozela.NET.wowozela_update_samples, 4)
             net.WriteTable(wowozela.KnownSamples)
             net.WriteBool(true)
@@ -226,7 +222,7 @@ if SERVER then
             ply.net_incoming_rate_count = nil
             ply.wowozela_real_pitch = pitch
 
-            net.Start("wowozela", true)
+            net.Start("wowozela_ttt", true)
                 net.WriteInt(wowozela.NET.wowozela_pitch, 4)
                 net.WriteEntity(ply)
                 net.WriteFloat(pitch)
@@ -235,12 +231,12 @@ if SERVER then
         [wowozela.NET.wowozela_select] = function(len, ply)
             local key, value = net.ReadInt(32), net.ReadInt(32)
             local wep = ply:GetActiveWeapon()
-            if wep:IsValid() and wep:GetClass() == "wowozela" then
+            if wep:IsValid() and wep:GetClass() == "ttt_wowozela" then
                 local function_name = "SetNoteIndex" .. keys[key]
 
                 if wep[function_name] then
                     wep[function_name](wep, value)
-                    net.Start("wowozela")
+                    net.Start("wowozela_ttt")
                         net.WriteInt(wowozela.NET.wowozela_sample, 4)
                         net.WriteEntity(ply)
                         net.WriteInt(key, 32)
@@ -274,7 +270,7 @@ if SERVER then
                 end
             end
 
-            net.Start("wowozela")
+            net.Start("wowozela_ttt")
                 net.WriteInt(wowozela.NET.wowozela_update_samples, 4)
                 net.WriteTable(newSamples)
                 net.WriteBool(false)
@@ -283,12 +279,12 @@ if SERVER then
         end,
         [wowozela.NET.wowozela_togglelooping] = function(len, ply)
             local wep = ply:GetActiveWeapon()
-            if wep:IsValid() and wep:GetClass() == "wowozela" then
+            if wep:IsValid() and wep:GetClass() == "ttt_wowozela" then
                 wep:SetLooping(not wep:GetLooping())
             end
         end
     }
-    net.Receive("wowozela", function(len, ply)
+    net.Receive("wowozela_ttt", function(len, ply)
         local func = netFuncs[net.ReadInt(4)]
         if func then func(len, ply) end
     end)
@@ -347,7 +343,7 @@ else
                     wowozela.CreateSampler(ply)
                 end
                 local wep = ply:GetActiveWeapon()
-                if wep:IsValid() and wep:GetClass() == "wowozela" then
+                if wep:IsValid() and wep:GetClass() == "ttt_wowozela" then
                     wep:LoadPages()
                 end
             end
@@ -364,7 +360,7 @@ else
             end
         end,
     }
-    net.Receive("wowozela", function()
+    net.Receive("wowozela_ttt", function()
         local func = netFuncs[net.ReadInt(4)]
         if func then func() end
     end)
@@ -397,7 +393,7 @@ if CLIENT then -- sample meta
         if button then
             local wep = self.Player:GetActiveWeapon()
             local get = "GetNoteIndex" .. button
-            if IsValid(wep) and wep:GetClass() == "wowozela" and wep[get] then
+            if IsValid(wep) and wep:GetClass() == "ttt_wowozela" and wep[get] then
                 return wep[get](wep)
             end
         end
@@ -407,7 +403,7 @@ if CLIENT then -- sample meta
         if not IsValid(self.Player) then return false end
 
         local wep = self.Player:GetActiveWeapon()
-        if IsValid(wep) and wep:GetClass() == "wowozela" then
+        if IsValid(wep) and wep:GetClass() == "ttt_wowozela" then
             return true
         end
 
@@ -572,7 +568,7 @@ if CLIENT then -- sample meta
                 end
             end
         end
-    end, "wowozela")
+    end, "wowozela_ttt")
 
     function META:Start(sample_index, key)
         if not self:CanPlay() then
@@ -810,7 +806,7 @@ do -- hooks
         end
 
         local wep = ply:GetActiveWeapon()
-        if wep:IsValid() and wep:GetClass() == "wowozela" and wowozela.IsValidKey(key) then
+        if wep:IsValid() and wep:GetClass() == "ttt_wowozela" and wowozela.IsValidKey(key) then
             if SERVER and wep.OnKeyEvent then
                 wowozela.BroadcastKeyEvent(ply, key, true)
                 wep:OnKeyEvent(key, true)
@@ -828,7 +824,7 @@ do -- hooks
         end
 
         local wep = ply:GetActiveWeapon()
-        if wep:IsValid() and wep:GetClass() == "wowozela" and wowozela.IsValidKey(key) then
+        if wep:IsValid() and wep:GetClass() == "ttt_wowozela" and wowozela.IsValidKey(key) then
             if SERVER and wep.OnKeyEvent then
                 wowozela.BroadcastKeyEvent(ply, key, false)
                 wep:OnKeyEvent(key, false)
@@ -886,7 +882,7 @@ do -- hooks
         timer.Create("WowozelaSlowThink", 0.5, 0, wowozela.SlowThink)
     else
         function wowozela.BroadcastKeyEvent(ply, key, press, filter)
-            net.Start("wowozela", true)
+            net.Start("wowozela_ttt", true)
             net.WriteInt(wowozela.NET.wowozela_key, 4)
             net.WriteEntity(ply)
             net.WriteInt(key, 32)

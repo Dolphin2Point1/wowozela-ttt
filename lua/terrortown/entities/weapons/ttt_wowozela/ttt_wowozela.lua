@@ -163,7 +163,7 @@ if CLIENT then
         cmd:SetViewAngles(ang + pitch_offset)
 
         if ply.wowozela_real_pitch ~= rcy then
-            net.Start("wowozela", true)
+            net.Start("wowozela_ttt", true)
             net.WriteInt(wowozela.NET.wowozela_pitch, 4)
             net.WriteFloat(rcy)
             net.SendToServer()
@@ -277,7 +277,7 @@ function SWEP:GetViewModelPosition(pos, ang)
 end
 
 hook.Add("PlayerSwitchWeapon", "WowozelaDontSwap", function(ply, wep, newwep)
-    if IsValid(wep) and wep:GetClass() == "wowozela" and
+    if IsValid(wep) and wep:GetClass() == "ttt_wowozela" and
         (ply:KeyDown(IN_RELOAD) or ply:KeyDown(IN_ATTACK) or ply:KeyDown(IN_ATTACK2)) then
         return true
     end
@@ -479,7 +479,7 @@ if CLIENT then
     end
 
     concommand.Add("wowozela_reset_custom_page", function()
-        local wep = IsValid(LocalPlayer()) and LocalPlayer():GetWeapon("wowozela")
+        local wep = IsValid(LocalPlayer()) and LocalPlayer():GetWeapon("ttt_wowozela")
         if IsValid(wep) then
             local customIndex = wep.CategoriesRev["custom"]
             if customIndex then
@@ -897,7 +897,7 @@ if CLIENT then
                 if mouse_x > x and mouse_x <= x + bsize and mouse_y > y and mouse_y <= y + bsize then
                     if left_down and not was_down then
                         was_down = true
-                        net.Start("wowozela")
+                        net.Start("wowozela_ttt")
                             net.WriteInt(wowozela.NET.wowozela_togglelooping, 4)
                         net.SendToServer()
                     elseif not left_down then
@@ -1003,7 +1003,7 @@ if CLIENT then
     timer.Create("wowozela_head_turn", 0.2, 0, function()
         for _, ply in ipairs(player.GetHumans()) do
             local wep = ply:GetActiveWeapon()
-            if not IsValid(wep) or wep:GetClass() ~= "wowozela" then
+            if not IsValid(wep) or wep:GetClass() ~= "ttt_wowozela" then
                 DisableUnlimitedPitch(ply)
             else
                 EnableUnlimitedPitch(ply)
@@ -1120,7 +1120,7 @@ if CLIENT then
     end
     hook.Add("PlayerBindPress", "WowozelaBindPress", function(ply, bind, pressed)
         local wep = ply:GetActiveWeapon()
-        if IsValid(wep) and wep:GetClass() == "wowozela" then
+        if IsValid(wep) and wep:GetClass() == "ttt_wowozela" then
             local num = tonumber(bind:match("slot(%d+)"))
             if num == 0 then
                 num = 10
@@ -1151,5 +1151,5 @@ if CLIENT then
 end
 
 if not _G.SWEP then
-    weapons.Register(SWEP, "wowozela")
+    weapons.Register(SWEP, "ttt_wowozela")
 end

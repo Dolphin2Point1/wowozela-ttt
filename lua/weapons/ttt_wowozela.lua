@@ -100,11 +100,12 @@ function SWEP:Initialize()
     self:SetLooping(true)
 end
 
-if SERVER then
-    function SWEP:OnDrop()
-        self:Remove()
-    end
-end
+// found this :( me no like
+-- if SERVER then
+--     function SWEP:OnDrop()
+--         self:Remove()
+--     end
+-- end
 
 
 

@@ -160,7 +160,7 @@ if CLIENT then
 
         if ply.wowozela_real_pitch ~= rcy then
             net.Start("wowozela_ttt", true)
-            net.WriteInt(wowozela.NET.wowozela_pitch, 4)
+            net.WriteInt(wowozela_ttt.NET.wowozela_pitch, 4)
             net.WriteFloat(rcy)
             net.SendToServer()
             --print("sending")
@@ -181,7 +181,10 @@ if CLIENT then
     end
 
     function EnableUnlimitedPitch(ply)
-        local sampler = wowozela.GetSampler(ply)
+        if wowozela_ttt == nil then
+            return
+        end
+        local sampler = wowozela_ttt.GetSampler(ply)
         if not sampler then return end
 
         if ply.wowozela_head_cb then return end
@@ -235,7 +238,8 @@ function SWEP:Deploy()
 end
 
 function SWEP:Holster()
-    if self:GetOwner() == nil and not self:GetOwner():KeyDown(IN_RELOAD) then
+    local owner = self:GetOwner()
+    if owner.KeyDown != nil and not owner:KeyDown(IN_RELOAD) then
         local ply = self:GetOwner()
         if CLIENT and ply.wowozela_head_cb then
             ply:RemoveCallback("BuildBonePositions", ply.wowozela_head_cb)
@@ -243,6 +247,9 @@ function SWEP:Holster()
         end
 
         return true
+    end
+    if owner != nil and owner.SelectWeapon != nil then
+        owner:SelectWeapon("ttt_wowozela");
     end
     return false
 end
@@ -420,17 +427,17 @@ if CLIENT then
         local cID = 4500 + LocalPlayer():EntIndex() * 15
         local missingOne = false
         for k, newsample in next, customsamples do
-            if not wowozela.GetSamples()[cID + k] or wowozela.GetSamples()[cID + k].path ~= newsample[1]  or wowozela.GetSamples()[cID + k].path ~= newsample[2] then
+            if not wowozela_ttt.GetSamples()[cID + k] or wowozela_ttt.GetSamples()[cID + k].path ~= newsample[1]  or wowozela_ttt.GetSamples()[cID + k].path ~= newsample[2] then
                 missingOne = true
             end
         end
 
         if missingOne then
-            wowozela.RequestCustomSamplesIndexes(customsamples)
+            wowozela_ttt.RequestCustomSamplesIndexes(customsamples)
         end
     end
     function SWEP:LoadPages()
-        if wowozela == nil or not wowozela.GetSample(1) then
+        if not wowozela_ttt.GetSample(1) then
             return
         end
 
@@ -444,7 +451,7 @@ if CLIENT then
             self.Pages[self.CategoriesRev["custom"]] = {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}}
         end
 
-        for k, v in ipairs(wowozela.GetSamples()) do
+        for k, v in ipairs(wowozela_ttt.GetSamples()) do
             local catIndex = self.CategoriesRev[v.category]
             if not catIndex then
                 catIndex = table.insert(self.Categories, v.category)
@@ -468,7 +475,7 @@ if CLIENT then
             self:LoadCustoms()
         end
 
-        local defaultPage = wowozela.defaultpage and wowozela.defaultpage:GetString()
+        local defaultPage = wowozela_ttt.defaultpage and wowozela_ttt.defaultpage:GetString()
         if defaultPage and defaultPage ~= "" then
             self.CurrentPageIndex = self.CategoriesRev[string.lower(defaultPage)] or 1
         end
@@ -493,19 +500,19 @@ if CLIENT then
     end
 
     function SWEP:GetNoteNameRight()
-        local sample = wowozela.GetSample(self:GetNoteIndexRight())
+        local sample = wowozela_ttt.GetSample(self:GetNoteIndexRight())
 
         return sample and sample.name
     end
 
     function SWEP:GetNoteNameLeft()
-        local sample = wowozela.GetSample(self:GetNoteIndexLeft())
+        local sample = wowozela_ttt.GetSample(self:GetNoteIndexLeft())
 
         return sample and sample.name
     end
 
     function SWEP:GetPageNoteIndexLeft()
-        local sample = wowozela.GetSample(self:GetNoteIndexLeft())
+        local sample = wowozela_ttt.GetSample(self:GetNoteIndexLeft())
         if not sample then
             return
         end
@@ -518,7 +525,7 @@ if CLIENT then
     end
 
     function SWEP:GetPageNoteIndexRight()
-        local sample = wowozela.GetSample(self:GetNoteIndexRight())
+        local sample = wowozela_ttt.GetSample(self:GetNoteIndexRight())
         if not sample then
             return
         end
@@ -538,7 +545,7 @@ if CLIENT then
             return
         end
 
-        for i, v in pairs(wowozela.GetSamples()) do
+        for i, v in pairs(wowozela_ttt.GetSamples()) do
             if sample.path == v.path and sample.name == v.name then
                 if v.custom and v.owner ~= LocalPlayer():EntIndex() then continue end
                 return i
@@ -557,10 +564,10 @@ if CLIENT then
                 lastHttp:Stop()
                 lastHttp = nil
             end
-            wowozela.PlayURL(path, "noplay", function(snd, _, err)
+            wowozela_ttt.PlayURL(path, "noplay", function(snd, _, err)
                 if not snd or err then return end
                 lastHttp = snd
-                snd:SetVolume(wowozela.intvolume or 0.25)
+                snd:SetVolume(wowozela_ttt.intvolume or 0.25)
                 snd:Play()
 
                 timer.Simple(1.5, function()
@@ -643,7 +650,7 @@ if CLIENT then
     local freeze_mouse
 
     function SWEP:DrawHelp(center_x)
-        if wowozela.help and not wowozela.help:GetBool() then return end
+        if wowozela_ttt.help and not wowozela_ttt.help:GetBool() then return end
         local keyName = input.LookupBinding("+menu", true) or "<+menu not bound>"
 
         draw_lines(center_x, ScrH(),
@@ -653,10 +660,10 @@ if CLIENT then
     end
 
     local function getHue(index)
-        if wowozela.GetSamples()[index].custom then
-            return util.CRC(wowozela.GetSamples()[index].path) % 360
+        if wowozela_ttt.GetSamples()[index].custom then
+            return util.CRC(wowozela_ttt.GetSamples()[index].path) % 360
         end
-        return index / #wowozela.GetSamples() * 360
+        return index / #wowozela_ttt.GetSamples() * 360
     end
 
     function SWEP:DrawWorldModel()
@@ -747,7 +754,7 @@ if CLIENT then
 
         local in_menu = self:GetOwner():KeyDown(IN_RELOAD)
 
-        if show_help_text and (not wowozela.help or wowozela.help:GetBool()) then
+        if show_help_text and (not wowozela_ttt.help or wowozela_ttt.help:GetBool()) then
             draw_lines(center_x, ScrH(), {"to select different sounds, hold " ..
                 (input.LookupBinding("+reload", true) or "<+reload not bound>")})
         end
@@ -841,13 +848,13 @@ if CLIENT then
                 local sample_index = self:PageIndexToWowozelaIndex(hovered_wedge_index)
                 if sample_index then
                     if left_pressed then
-                        play_non_looping_sound(self, wowozela.GetSample(sample_index).custom, wowozela.GetSample(sample_index).path)
-                        wowozela.SetSampleIndexLeft(sample_index)
+                        play_non_looping_sound(self, wowozela_ttt.GetSample(sample_index).custom, wowozela_ttt.GetSample(sample_index).path)
+                        wowozela_ttt.SetSampleIndexLeft(sample_index)
                     end
 
                     if right_pressed then
-                        play_non_looping_sound(self, wowozela.GetSample(sample_index).custom, wowozela.GetSample(sample_index).path)
-                        wowozela.SetSampleIndexRight(sample_index)
+                        play_non_looping_sound(self, wowozela_ttt.GetSample(sample_index).custom, wowozela_ttt.GetSample(sample_index).path)
+                        wowozela_ttt.SetSampleIndexRight(sample_index)
                     end
                 end
             end
@@ -894,7 +901,7 @@ if CLIENT then
                     if left_down and not was_down then
                         was_down = true
                         net.Start("wowozela_ttt")
-                            net.WriteInt(wowozela.NET.wowozela_togglelooping, 4)
+                            net.WriteInt(wowozela_ttt.NET.wowozela_togglelooping, 4)
                         net.SendToServer()
                     elseif not left_down then
                         was_down = false
@@ -927,7 +934,7 @@ if CLIENT then
             end
         end
 
-        if not LocalPlayer():ShouldDrawLocalPlayer() and (not wowozela.hudtext or wowozela.hudtext:GetBool()) then
+        if not LocalPlayer():ShouldDrawLocalPlayer() and (not wowozela_ttt.hudtext or wowozela_ttt.hudtext:GetBool()) then
 
             local hud_distance = 128
 
@@ -964,7 +971,7 @@ if CLIENT then
                 Color(255, 255, 255, 150), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
         end
 
-        if wowozela.pitchbar and wowozela.pitchbar:GetBool() then
+        if wowozela_ttt.pitchbar and wowozela_ttt.pitchbar:GetBool() then
             local perSeg = 15
             local scale = (ScrH() / 3) / 10
 
@@ -1001,7 +1008,7 @@ if CLIENT then
             local wep = ply:GetActiveWeapon()
             if not IsValid(wep) or wep:GetClass() ~= "ttt_wowozela" then
                 DisableUnlimitedPitch(ply)
-            else
+            elseif (wep ~= nil) then
                 EnableUnlimitedPitch(ply)
             end
         end
@@ -1039,13 +1046,13 @@ if CLIENT then
 
         local Menu = DermaMenu()
         local submenus = {}
-        for _, data in ipairs(wowozela.GetSamples()) do
+        for _, data in ipairs(wowozela_ttt.GetSamples()) do
             local category = data.category
 
             submenus[category] = submenus[category] or Menu:AddSubMenu(category)
         end
 
-        for _, data2 in ipairs(wowozela.GetSamples()) do
+        for _, data2 in ipairs(wowozela_ttt.GetSamples()) do
             submenus[data2.category]:AddOption(data2.name, function()
                 wep.Pages[selection2.page][selection2.index] = data2
                 file.Write("wowozela_custom_page.txt",
@@ -1061,7 +1068,7 @@ if CLIENT then
         Menu:AddOption("custom...", function()
             Derma_StringRequest("Sound (Mp3/Ogg)", "Insert a web-hosted ogg or mp3.\n(GitHub, Vocaroo, Dropbox, Puush, Google Drive or similar sites)", "", function(text)
                 local subtext = nil
-                text, subtext = wowozela.ProcessURL(text)
+                text, subtext = wowozela_ttt.ProcessURL(text)
                 if text:sub(1, 4) ~= "http" then return end
 
                 if text:sub(1, 19) == "https://github.com/" and text:sub(-9) ~= "?raw=true" then
@@ -1070,10 +1077,10 @@ if CLIENT then
 
                 text = text:gsub(" ", "%%20")
                 local filename = getFileName(subtext or text)
-                wowozela.PlayURL(text, "noplay", function(snd, _, err)
+                wowozela_ttt.PlayURL(text, "noplay", function(snd, _, err)
                     if not snd or err then soundError("Invalid Ogg/Mp3!") return end
                     lastHttp = snd
-                    snd:SetVolume(wowozela.intvolume or 0.25)
+                    snd:SetVolume(wowozela_ttt.intvolume or 0.25)
                     snd:Play()
 
                     timer.Simple(1.5, function()
@@ -1134,10 +1141,10 @@ if CLIENT then
             elseif (ply:KeyDown(IN_ATTACK) or ply:KeyDown(IN_ATTACK2)) and num and pressed then
                 local sample_index = wep:PageIndexToWowozelaIndex(num)
                 if sample_index and ply:KeyDown(IN_ATTACK) then
-                    wowozela.SetSampleIndexLeft(sample_index)
+                    wowozela_ttt.SetSampleIndexLeft(sample_index)
                 end
                 if sample_index and ply:KeyDown(IN_ATTACK2) then
-                    wowozela.SetSampleIndexRight(sample_index)
+                    wowozela_ttt.SetSampleIndexRight(sample_index)
                 end
 
                 return true

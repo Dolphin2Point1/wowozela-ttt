@@ -20,8 +20,6 @@ function wowozela.GetSample(i)
     return wowozela.KnownSamples[i]
 end
 
-
-
 if CLIENT then
     wowozela.Samplers = {}
     wowozela.volume = CreateClientConVar("wowozela_volume", "0.5", true, false)

@@ -146,7 +146,7 @@ if SERVER then
                 if file_name:EndsWith(".ogg") or file_name:EndsWith(".mp3") then
                     table.insert(wowozela.KnownSamples, {
                         category = directory,
-                        path = "wowozela/samples/" .. directory .. "/" .. file_name,
+                        path = "ttt_wowozela/samples/" .. directory .. "/" .. file_name,
                         name = file_name:match("(.+)%.")
                     })
                 end
